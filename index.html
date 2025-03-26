@@ -10,3 +10,42 @@
     <h1>labelmake to pdfme</h1>
   </body>
 </html>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>labelmake から pdfme へのテンプレート変換</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>labelmake から pdfme へのテンプレート変換</h1>
+        <div class="upload-section">
+            <h2>labelmakeのテンプレートJSONをアップロード</h2>
+            <input type="file" id="template-upload" accept=".json">
+            <div id="template-info" class="info-box"></div>
+        </div>
+        
+        <div class="result-section" id="result-section" style="display: none;">
+            <h2>変換結果</h2>
+            <div class="preview-container">
+                <div id="preview"></div>
+            </div>
+            <button id="download-btn">pdfmeテンプレートをダウンロード</button>
+        </div>
+        
+        <div class="error-section" id="error-section" style="display: none;">
+            <h2>エラー</h2>
+            <div id="error-message" class="error-message"></div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>このツールは <a href="https://labelmake.jp/" target="_blank">labelmake.jp</a> から <a href="https://app.pdfme.com/" target="_blank">app.pdfme.com</a> へのテンプレート移行を支援します。</p>
+    </footer>
+    
+    <script src="https://unpkg.com/@pdfme/ui@1.1.5/dist/index.umd.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
