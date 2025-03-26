@@ -95,6 +95,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        if (!pdfmeApiKey) {
+            errorMessage.textContent = 'pdfme APIキーを入力してください。';
+            errorSection.style.display = 'block';
+            return;
+        }
+        
         try {
             // スキーマをJSONとして解析
             let schemaData;
@@ -110,32 +116,52 @@ document.addEventListener('DOMContentLoaded', function() {
                 description: templateDescription,
                 tags: templateTags.split(',').map(tag => tag.trim()).filter(tag => tag),
                 schemas: schemaData.schemas || [],
-                basePdf: schemaData.basePdf || null,
+                basePdf: schemaData.basePdf || null
+            };
+            
+            // ローカルのコピーにAPIキーを追加（ダウンロード用）
+            const templateWithApiKeys = {
+                ...pdfmeTemplate,
                 apiKeys: {}
             };
             
             // APIキーが設定されている場合は追加
             if (labelmakeApiKey) {
-                pdfmeTemplate.apiKeys.labelmake = labelmakeApiKey;
+                templateWithApiKeys.apiKeys.labelmake = labelmakeApiKey;
             }
             
             if (pdfmeApiKey) {
-                pdfmeTemplate.apiKeys.pdfme = pdfmeApiKey;
+                templateWithApiKeys.apiKeys.pdfme = pdfmeApiKey;
             }
             
-            convertedTemplate = pdfmeTemplate;
+            // pdfme APIにテンプレートを登録
+            registerBtn.disabled = true;
+            registerBtn.textContent = '登録中...';
+            
+            const registeredTemplate = await registerTemplateToPdfme(pdfmeTemplate, pdfmeApiKey);
+            
+            // 登録成功
+            convertedTemplate = templateWithApiKeys;
             
             // プレビュー表示
             showPreview(convertedTemplate);
             
-            templateInfo.textContent = `テンプレート名: ${templateName}`;
+            templateInfo.textContent = `テンプレート名: ${templateName} (ID: ${registeredTemplate.id})`;
             resultSection.style.display = 'block';
             errorSection.style.display = 'none';
+            
+            // ボタンを元に戻す
+            registerBtn.disabled = false;
+            registerBtn.textContent = 'pdfmeにテンプレートを登録';
         } catch (err) {
             console.error('Error processing template:', err);
             errorMessage.textContent = `エラー: ${err.message}`;
             resultSection.style.display = 'none';
             errorSection.style.display = 'block';
+            
+            // ボタンを元に戻す
+            registerBtn.disabled = false;
+            registerBtn.textContent = 'pdfmeにテンプレートを登録';
         }
     });
     
@@ -255,6 +281,33 @@ document.addEventListener('DOMContentLoaded', function() {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    }
+    
+    // pdfmeにテンプレートを登録
+    async function registerTemplateToPdfme(template, apiKey) {
+        if (!apiKey) {
+            throw new Error('pdfme APIキーが設定されていません。');
+        }
+        
+        const response = await fetch('https://api.pdfme.com/v1/templates', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(template)
+        });
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error('APIキーが無効です。正しいpdfme APIキーを入力してください。');
+            }
+            
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(`テンプレートの登録に失敗しました。ステータスコード: ${response.status}, エラー: ${errorData.message || 'Unknown error'}`);
+        }
+        
+        return await response.json();
     }
     
     // labelmakeからテンプレート一覧を取得
