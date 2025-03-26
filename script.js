@@ -248,7 +248,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const typeMap = {
             'text': 'text',
             'image': 'image',
-            // 他のタイプのマッピングを追加
+            'qrcode': 'qrcode',
+            'barcode': 'qrcode', // pdfmeではbarcodeもqrcodeとして扱う
+            'checkbox': 'text',  // pdfmeにはcheckboxがないのでtextで代用
+            'radio': 'text'      // pdfmeにはradioがないのでtextで代用
         };
         
         return typeMap[labelmakeType] || 'text';
@@ -379,6 +382,74 @@ document.addEventListener('DOMContentLoaded', function() {
 		//  ]
 		//]
     function convertSchemas(schemas) {
+      if (!schemas || !Array.isArray(schemas) || schemas.length === 0) {
+        return [[]]; // 空のスキーマを返す
+      }
+      
+      // pdfmeのスキーマは[[]]の形式なので、最初の配列を作成
+      const pdfmeSchemas = [[]];
+      
+      // labelmakeのスキーマを処理
+      schemas.forEach(schemaObj => {
+        // 各オブジェクトのキーを処理
+        Object.keys(schemaObj).forEach(fieldName => {
+          const fieldData = schemaObj[fieldName];
+          
+          // フィールドタイプのマッピング
+          let fieldType = 'text'; // デフォルトはtext
+          if (fieldData.type) {
+            if (fieldData.type === 'qrcode' || fieldData.type === 'barcode') {
+              fieldType = 'qrcode';
+            } else if (fieldData.type === 'image') {
+              fieldType = 'image';
+            }
+          }
+          
+          // pdfmeのフィールド形式に変換
+          const pdfmeField = {
+            name: fieldName,
+            type: fieldType,
+            content: fieldType === 'text' ? 'Type Something...' : '',
+            position: {
+              x: fieldData.position ? fieldData.position.x : 0,
+              y: fieldData.position ? fieldData.position.y : 0
+            },
+            width: fieldData.width || 45,
+            height: fieldData.height || 10,
+            rotate: 0,
+            alignment: fieldData.alignment || 'left',
+            verticalAlignment: 'top',
+            fontSize: fieldData.fontSize || 13,
+            lineHeight: fieldData.lineHeight || 1,
+            characterSpacing: fieldData.characterSpacing || 0,
+            fontColor: fieldData.fontColor || '#000000',
+            backgroundColor: fieldData.backgroundColor || '',
+            opacity: 1,
+            strikethrough: false,
+            underline: false,
+            required: false
+          };
+          
+          // ページ情報があれば追加
+          if (fieldData.page) {
+            // pdfmeでは0ベースのページ番号、labelmakeは1ベース
+            const pageIndex = parseInt(fieldData.page) - 1;
+            
+            // 必要なページ配列を確保
+            while (pdfmeSchemas.length <= pageIndex) {
+              pdfmeSchemas.push([]);
+            }
+            
+            // 該当ページにフィールドを追加
+            pdfmeSchemas[pageIndex].push(pdfmeField);
+          } else {
+            // ページ情報がない場合は最初のページに追加
+            pdfmeSchemas[0].push(pdfmeField);
+          }
+        });
+      });
+      
+      return pdfmeSchemas;
     }
     
     // pdfmeにテンプレートを登録
