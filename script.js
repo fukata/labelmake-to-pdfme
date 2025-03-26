@@ -111,12 +111,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // pdfmeテンプレートの作成
+            let basePdf = null;
+            if (schemaData.basePdf) {
+              // URLからダウンロードしbase64に変換する
+              basePdf = await convertBasePdfToBase64(schemaData.basePdf)
+            }
             const pdfmeTemplate = {
-                name: templateName,
-                description: templateDescription,
-                tags: templateTags.split(',').map(tag => tag.trim()).filter(tag => tag),
-                schemas: schemaData.schemas || [],
-                basePdf: schemaData.basePdf || null
+                metaData: {
+                  title: templateName,
+                  description: templateDescription,
+                  tags: templateTags.split(',').map(tag => tag.trim()).filter(tag => tag),
+                  status: "published",
+                },
+                templateData: {
+                  schemas: schemaData.schemas || [],
+                  basePdf: schemaData.basePdf || null
+                },
             };
             
             // ローカルのコピーにAPIキーを追加（ダウンロード用）
@@ -281,6 +291,11 @@ document.addEventListener('DOMContentLoaded', function() {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    }
+
+    // URLからPDFをダウンロードしbase64に変換
+    async function convertBasePdfToBase64(url) {
+      return null;
     }
     
     // pdfmeにテンプレートを登録
