@@ -16,25 +16,35 @@ document.addEventListener('DOMContentLoaded', function() {
     let labelmakeApiKey = '';
     let pdfmeApiKey = '';
     
-    // APIキーの変更を監視
+    // APIキーの変更を監視（changeとinputの両方で）
     labelmakeApiKeyInput.addEventListener('change', function(e) {
         labelmakeApiKey = e.target.value.trim();
-        localStorage.setItem('labelmakeApiKey', labelmakeApiKey);
+        sessionStorage.setItem('labelmakeApiKey', labelmakeApiKey);
+    });
+    
+    labelmakeApiKeyInput.addEventListener('input', function(e) {
+        labelmakeApiKey = e.target.value.trim();
+        sessionStorage.setItem('labelmakeApiKey', labelmakeApiKey);
     });
     
     pdfmeApiKeyInput.addEventListener('change', function(e) {
         pdfmeApiKey = e.target.value.trim();
-        localStorage.setItem('pdfmeApiKey', pdfmeApiKey);
+        sessionStorage.setItem('pdfmeApiKey', pdfmeApiKey);
     });
     
-    // ローカルストレージからAPIキーを復元
-    if (localStorage.getItem('labelmakeApiKey')) {
-        labelmakeApiKey = localStorage.getItem('labelmakeApiKey');
+    pdfmeApiKeyInput.addEventListener('input', function(e) {
+        pdfmeApiKey = e.target.value.trim();
+        sessionStorage.setItem('pdfmeApiKey', pdfmeApiKey);
+    });
+    
+    // セッションストレージからAPIキーを復元
+    if (sessionStorage.getItem('labelmakeApiKey')) {
+        labelmakeApiKey = sessionStorage.getItem('labelmakeApiKey');
         labelmakeApiKeyInput.value = labelmakeApiKey;
     }
     
-    if (localStorage.getItem('pdfmeApiKey')) {
-        pdfmeApiKey = localStorage.getItem('pdfmeApiKey');
+    if (sessionStorage.getItem('pdfmeApiKey')) {
+        pdfmeApiKey = sessionStorage.getItem('pdfmeApiKey');
         pdfmeApiKeyInput.value = pdfmeApiKey;
     }
     
