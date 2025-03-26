@@ -21,6 +21,18 @@
 <body>
     <div class="container">
         <h1>labelmake から pdfme へのテンプレート変換</h1>
+        <div class="api-keys-section">
+            <h2>APIキー設定</h2>
+            <div class="form-group">
+                <label for="labelmake-api-key">labelmake APIキー（オプション）:</label>
+                <input type="text" id="labelmake-api-key" placeholder="labelmake APIキーを入力">
+            </div>
+            <div class="form-group">
+                <label for="pdfme-api-key">pdfme APIキー（オプション）:</label>
+                <input type="text" id="pdfme-api-key" placeholder="pdfme APIキーを入力">
+            </div>
+        </div>
+        
         <div class="upload-section">
             <h2>labelmakeのテンプレートJSONをアップロード</h2>
             <input type="file" id="template-upload" accept=".json">

@@ -32,11 +32,29 @@ h2 {
     color: #3498db;
 }
 
-.upload-section, .result-section, .error-section {
+.upload-section, .result-section, .error-section, .api-keys-section {
     margin-bottom: 30px;
     padding: 20px;
     border-radius: 5px;
     background-color: #f9f9f9;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.form-group input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
 }
 
 input[type="file"] {

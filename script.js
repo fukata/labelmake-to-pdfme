@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const labelmakeApiKeyInput = document.getElementById('labelmake-api-key');
+    const pdfmeApiKeyInput = document.getElementById('pdfme-api-key');
     const templateUpload = document.getElementById('template-upload');
     const templateInfo = document.getElementById('template-info');
     const resultSection = document.getElementById('result-section');
@@ -8,6 +10,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const previewElement = document.getElementById('preview');
     
     let convertedTemplate = null;
+    let labelmakeApiKey = '';
+    let pdfmeApiKey = '';
+    
+    // APIキーの変更を監視
+    labelmakeApiKeyInput.addEventListener('change', function(e) {
+        labelmakeApiKey = e.target.value.trim();
+        localStorage.setItem('labelmakeApiKey', labelmakeApiKey);
+    });
+    
+    pdfmeApiKeyInput.addEventListener('change', function(e) {
+        pdfmeApiKey = e.target.value.trim();
+        localStorage.setItem('pdfmeApiKey', pdfmeApiKey);
+    });
+    
+    // ローカルストレージからAPIキーを復元
+    if (localStorage.getItem('labelmakeApiKey')) {
+        labelmakeApiKey = localStorage.getItem('labelmakeApiKey');
+        labelmakeApiKeyInput.value = labelmakeApiKey;
+    }
+    
+    if (localStorage.getItem('pdfmeApiKey')) {
+        pdfmeApiKey = localStorage.getItem('pdfmeApiKey');
+        pdfmeApiKeyInput.value = pdfmeApiKey;
+    }
     
     templateUpload.addEventListener('change', async function(e) {
         const file = e.target.files[0];
@@ -68,8 +94,18 @@ document.addEventListener('DOMContentLoaded', function() {
         // pdfmeのテンプレート構造を作成
         const pdfmeTemplate = {
             schemas: [],
-            basePdf: labelmakeTemplate.template.basePdf || null
+            basePdf: labelmakeTemplate.template.basePdf || null,
+            apiKeys: {}
         };
+        
+        // APIキーが設定されている場合は追加
+        if (labelmakeApiKey) {
+            pdfmeTemplate.apiKeys.labelmake = labelmakeApiKey;
+        }
+        
+        if (pdfmeApiKey) {
+            pdfmeTemplate.apiKeys.pdfme = pdfmeApiKey;
+        }
         
         // labelmakeのフィールドをpdfmeのスキーマに変換
         if (labelmakeTemplate.template.schemas) {
