@@ -329,6 +329,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     // テンプレート情報を表示
                     templateInfo.textContent = `テンプレート名: ${templateData.name || 'No Name'}`;
                     
+                    // テンプレート名をフォームに設定
+                    templateNameInput.value = templateData.name || '';
+                    
+                    // タグがあれば設定
+                    if (templateData.tags && Array.isArray(templateData.tags)) {
+                        templateTagsInput.value = templateData.tags.join(', ');
+                    }
+                    
+                    // スキーマをJSONとして設定
+                    const schemaData = {
+                        schemas: convertedTemplate.schemas || [],
+                        basePdf: convertedTemplate.basePdf || null
+                    };
+                    templateSchemaInput.value = JSON.stringify(schemaData, null, 2);
+                    
                     // APIキーをテキストフィールドに設定
                     if (convertedTemplate.apiKeys) {
                         if (convertedTemplate.apiKeys.labelmake) {
