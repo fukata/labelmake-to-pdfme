@@ -163,50 +163,36 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // labelmakeのテンプレートをpdfmeのテンプレートに変換
     function convertLabelmakeToPdfme(labelmakeTemplate) {
-        // labelmakeのテンプレート構造を確認
-        if (!labelmakeTemplate.template) {
-            throw new Error('無効なlabelmakeテンプレート形式です。');
-        }
-        
         // pdfmeのテンプレート構造を作成
         const pdfmeTemplate = {
-            schemas: [],
-            basePdf: labelmakeTemplate.template.basePdf || null,
-            apiKeys: {}
+            columns: labelmakeTemplate.columns,
+            schemas: labelmakeTemplate.schemas,
+            basePdf: labelmakeTemplate.basePdf || null,
         };
         
-        // APIキーが設定されている場合は追加
-        if (labelmakeApiKey) {
-            pdfmeTemplate.apiKeys.labelmake = labelmakeApiKey;
-        }
-        
-        if (pdfmeApiKey) {
-            pdfmeTemplate.apiKeys.pdfme = pdfmeApiKey;
-        }
-        
         // labelmakeのフィールドをpdfmeのスキーマに変換
-        if (labelmakeTemplate.template.schemas) {
-            labelmakeTemplate.template.schemas.forEach(schema => {
-                const pdfmeSchema = {
-                    type: mapFieldType(schema.type),
-                    position: {
-                        x: schema.position.x,
-                        y: schema.position.y
-                    },
-                    width: schema.width,
-                    height: schema.height,
-                    name: schema.key,
-                    // pdfmeの追加プロパティ
-                    alignment: mapAlignment(schema.align),
-                    fontSize: schema.fontSize || 12,
-                    fontColor: schema.fontColor || '#000000',
-                    backgroundColor: schema.backgroundColor || null,
-                    page: schema.page || 1
-                };
-                
-                pdfmeTemplate.schemas.push(pdfmeSchema);
-            });
-        }
+        //if (labelmakeTemplate.template.schemas) {
+        //    labelmakeTemplate.template.schemas.forEach(schema => {
+        //        const pdfmeSchema = {
+        //            type: mapFieldType(schema.type),
+        //            position: {
+        //                x: schema.position.x,
+        //                y: schema.position.y
+        //            },
+        //            width: schema.width,
+        //            height: schema.height,
+        //            name: schema.key,
+        //            // pdfmeの追加プロパティ
+        //            alignment: mapAlignment(schema.align),
+        //            fontSize: schema.fontSize || 12,
+        //            fontColor: schema.fontColor || '#000000',
+        //            backgroundColor: schema.backgroundColor || null,
+        //            page: schema.page || 1
+        //        };
+        //        
+        //        pdfmeTemplate.schemas.push(pdfmeSchema);
+        //    });
+        //}
         
         return pdfmeTemplate;
     }
