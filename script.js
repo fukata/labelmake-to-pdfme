@@ -288,8 +288,13 @@ document.addEventListener('DOMContentLoaded', function() {
         return await response.json();
     }
     
+    // テンプレート一覧のグローバル変数
+    let templates = [];
+    
     // テンプレート一覧を表示
-    function displayTemplatesList(templates) {
+    function displayTemplatesList(templatesData) {
+        // グローバル変数に保存
+        templates = templatesData;
         if (!templates || templates.length === 0) {
             templatesList.innerHTML = '<p>テンプレートが見つかりませんでした。</p>';
             return;
@@ -313,40 +318,40 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // テンプレート選択ボタンのイベントリスナーを追加
         document.querySelectorAll('.template-select-btn').forEach(btn => {
-            btn.addEventListener('click', async function() {
+            btn.addEventListener('click', function() {
                 const templateId = this.getAttribute('data-id');
                 try {
-                    // 読み込み中の表示（テンプレート一覧全体ではなく、選択したテンプレートの行だけを更新）
-                    const selectedItem = this.closest('.template-item');
-                    const originalContent = selectedItem.innerHTML;
-                    selectedItem.innerHTML = '<div class="loading">テンプレートを読み込み中...</div>';
-                    
-                    const templateData = await fetchLabelmakeTemplate(labelmakeApiKey, templateId);
-                    
+                    // 選択されたテンプレートを一覧から見つける
+                    const selectedTemplate = templates.find(template => template.id === templateId);
+                
+                    if (!selectedTemplate) {
+                        throw new Error('選択されたテンプレートが見つかりません。');
+                    }
+                
                     // テンプレートを変換
-                    convertedTemplate = convertLabelmakeToPdfme(templateData);
-                    
+                    convertedTemplate = convertLabelmakeToPdfme(selectedTemplate);
+                
                     // プレビュー表示
                     showPreview(convertedTemplate);
-                    
+                
                     // テンプレート情報を表示
-                    templateInfo.textContent = `テンプレート名: ${templateData.name || 'No Name'}`;
-                    
+                    templateInfo.textContent = `テンプレート名: ${selectedTemplate.name || 'No Name'}`;
+                
                     // テンプレート名をフォームに設定
-                    templateNameInput.value = templateData.name || '';
-                    
+                    templateNameInput.value = selectedTemplate.name || '';
+                
                     // タグがあれば設定
-                    if (templateData.tags && Array.isArray(templateData.tags)) {
-                        templateTagsInput.value = templateData.tags.join(', ');
+                    if (selectedTemplate.tags && Array.isArray(selectedTemplate.tags)) {
+                        templateTagsInput.value = selectedTemplate.tags.join(', ');
                     }
-                    
+                
                     // スキーマをJSONとして設定
                     const schemaData = {
                         schemas: convertedTemplate.schemas || [],
                         basePdf: convertedTemplate.basePdf || null
                     };
                     templateSchemaInput.value = JSON.stringify(schemaData, null, 2);
-                    
+                
                     // APIキーをテキストフィールドに設定
                     if (convertedTemplate.apiKeys) {
                         if (convertedTemplate.apiKeys.labelmake) {
@@ -354,21 +359,18 @@ document.addEventListener('DOMContentLoaded', function() {
                             labelmakeApiKey = convertedTemplate.apiKeys.labelmake;
                             sessionStorage.setItem('labelmakeApiKey', labelmakeApiKey);
                         }
-                        
+                    
                         if (convertedTemplate.apiKeys.pdfme) {
                             pdfmeApiKeyInput.value = convertedTemplate.apiKeys.pdfme;
                             pdfmeApiKey = convertedTemplate.apiKeys.pdfme;
                             sessionStorage.setItem('pdfmeApiKey', pdfmeApiKey);
                         }
                     }
-                    
+                
                     resultSection.style.display = 'block';
                     errorSection.style.display = 'none';
-                    
-                    // 元の表示に戻す
-                    selectedItem.innerHTML = originalContent;
                 } catch (err) {
-                    console.error('Error fetching template:', err);
+                    console.error('Error processing template:', err);
                     errorMessage.textContent = `エラー: ${err.message}`;
                     errorSection.style.display = 'block';
                 }
@@ -376,23 +378,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // 特定のテンプレートを取得
-    async function fetchLabelmakeTemplate(apiKey, templateId) {
-        const response = await fetch(`https://labelmake.jp/api/templates/${templateId}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        if (!response.ok) {
-            if (response.status === 401) {
-                throw new Error('APIキーが無効です。正しいlabelmake APIキーを入力してください。');
-            }
-            throw new Error(`テンプレートの取得に失敗しました。ステータスコード: ${response.status}`);
-        }
-        
-        return await response.json();
-    }
 });
