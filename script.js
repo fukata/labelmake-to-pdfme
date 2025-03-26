@@ -228,11 +228,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // labelmakeからテンプレート一覧を取得
     async function fetchLabelmakeTemplates(apiKey) {
-        const response = await fetch('https://labelmake.jp/api/templates', {
+        const response = await fetch('https://api.labelmake.jp/v1/templates', {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json'
+              'X-Labelmake-API-Token': apiKey,
+              'Content-Type': 'application/json'
             }
         });
         
