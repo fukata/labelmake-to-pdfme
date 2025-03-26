@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const errorMessage = document.getElementById('error-message');
     const downloadBtn = document.getElementById('download-btn');
     const previewElement = document.getElementById('preview');
+    const loadTemplatesBtn = document.getElementById('load-templates-btn');
+    const templatesListSection = document.getElementById('templates-list-section');
+    const templatesList = document.getElementById('templates-list');
     
     let convertedTemplate = null;
     let labelmakeApiKey = '';
@@ -34,6 +37,28 @@ document.addEventListener('DOMContentLoaded', function() {
         pdfmeApiKey = localStorage.getItem('pdfmeApiKey');
         pdfmeApiKeyInput.value = pdfmeApiKey;
     }
+    
+    // テンプレート一覧を読み込むボタンのイベントリスナー
+    loadTemplatesBtn.addEventListener('click', async function() {
+        if (!labelmakeApiKey) {
+            errorMessage.textContent = 'labelmake APIキーを入力してください。';
+            errorSection.style.display = 'block';
+            return;
+        }
+        
+        try {
+            templatesList.innerHTML = '<div class="loading">テンプレート一覧を読み込み中...</div>';
+            templatesListSection.style.display = 'block';
+            
+            const templates = await fetchLabelmakeTemplates(labelmakeApiKey);
+            displayTemplatesList(templates);
+        } catch (err) {
+            console.error('Error fetching templates:', err);
+            errorMessage.textContent = `エラー: ${err.message}`;
+            errorSection.style.display = 'block';
+            templatesListSection.style.display = 'none';
+        }
+    });
     
     templateUpload.addEventListener('change', async function(e) {
         const file = e.target.files[0];
@@ -189,5 +214,99 @@ document.addEventListener('DOMContentLoaded', function() {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    }
+    
+    // labelmakeからテンプレート一覧を取得
+    async function fetchLabelmakeTemplates(apiKey) {
+        const response = await fetch('https://labelmake.jp/api/templates', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error('APIキーが無効です。正しいlabelmake APIキーを入力してください。');
+            }
+            throw new Error(`テンプレート一覧の取得に失敗しました。ステータスコード: ${response.status}`);
+        }
+        
+        return await response.json();
+    }
+    
+    // テンプレート一覧を表示
+    function displayTemplatesList(templates) {
+        if (!templates || templates.length === 0) {
+            templatesList.innerHTML = '<p>テンプレートが見つかりませんでした。</p>';
+            return;
+        }
+        
+        let html = '';
+        templates.forEach(template => {
+            const createdAt = new Date(template.createdAt).toLocaleString('ja-JP');
+            html += `
+                <div class="template-item" data-id="${template.id}">
+                    <div class="template-info">
+                        <div class="template-name">${template.name || 'No Name'}</div>
+                        <div class="template-date">作成日: ${createdAt}</div>
+                    </div>
+                    <button class="template-select-btn" data-id="${template.id}">選択</button>
+                </div>
+            `;
+        });
+        
+        templatesList.innerHTML = html;
+        
+        // テンプレート選択ボタンのイベントリスナーを追加
+        document.querySelectorAll('.template-select-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const templateId = this.getAttribute('data-id');
+                try {
+                    templatesList.innerHTML = '<div class="loading">テンプレートを読み込み中...</div>';
+                    
+                    const templateData = await fetchLabelmakeTemplate(labelmakeApiKey, templateId);
+                    
+                    // テンプレートを変換
+                    convertedTemplate = convertLabelmakeToPdfme(templateData);
+                    
+                    // プレビュー表示
+                    showPreview(convertedTemplate);
+                    
+                    templateInfo.textContent = `テンプレート名: ${templateData.name || 'No Name'}`;
+                    resultSection.style.display = 'block';
+                    errorSection.style.display = 'none';
+                    
+                    // テンプレート一覧を再表示
+                    const templates = await fetchLabelmakeTemplates(labelmakeApiKey);
+                    displayTemplatesList(templates);
+                } catch (err) {
+                    console.error('Error fetching template:', err);
+                    errorMessage.textContent = `エラー: ${err.message}`;
+                    errorSection.style.display = 'block';
+                }
+            });
+        });
+    }
+    
+    // 特定のテンプレートを取得
+    async function fetchLabelmakeTemplate(apiKey, templateId) {
+        const response = await fetch(`https://labelmake.jp/api/templates/${templateId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error('APIキーが無効です。正しいlabelmake APIキーを入力してください。');
+            }
+            throw new Error(`テンプレートの取得に失敗しました。ステータスコード: ${response.status}`);
+        }
+        
+        return await response.json();
     }
 });
