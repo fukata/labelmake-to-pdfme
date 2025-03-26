@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const labelmakeApiKeyInput = document.getElementById('labelmake-api-key');
     const pdfmeApiKeyInput = document.getElementById('pdfme-api-key');
     const templateNameInput = document.getElementById('template-name');
+    const templateDescriptionInput = document.getElementById('template-description');
     const templateTagsInput = document.getElementById('template-tags');
     const templateSchemaInput = document.getElementById('template-schema');
     const registerBtn = document.getElementById('register-btn');
@@ -78,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     registerBtn.addEventListener('click', async function() {
         const templateName = templateNameInput.value.trim();
+        const templateDescription = templateDescriptionInput.value.trim();
         const templateTags = templateTagsInput.value.trim();
         const templateSchema = templateSchemaInput.value.trim();
         
@@ -105,6 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // pdfmeテンプレートの作成
             const pdfmeTemplate = {
                 name: templateName,
+                description: templateDescription,
                 tags: templateTags.split(',').map(tag => tag.trim()).filter(tag => tag),
                 schemas: schemaData.schemas || [],
                 basePdf: schemaData.basePdf || null,
@@ -325,6 +328,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                     // テンプレート名をフォームに設定
                     templateNameInput.value = selectedTemplate.name || '';
+                    
+                    // 説明をフォームに設定
+                    templateDescriptionInput.value = selectedTemplate.description || '';
                 
                     // タグがあれば設定
                     if (selectedTemplate.tags && Array.isArray(selectedTemplate.tags)) {
