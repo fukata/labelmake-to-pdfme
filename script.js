@@ -316,7 +316,10 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.addEventListener('click', async function() {
                 const templateId = this.getAttribute('data-id');
                 try {
-                    templatesList.innerHTML = '<div class="loading">テンプレートを読み込み中...</div>';
+                    // 読み込み中の表示（テンプレート一覧全体ではなく、選択したテンプレートの行だけを更新）
+                    const selectedItem = this.closest('.template-item');
+                    const originalContent = selectedItem.innerHTML;
+                    selectedItem.innerHTML = '<div class="loading">テンプレートを読み込み中...</div>';
                     
                     const templateData = await fetchLabelmakeTemplate(labelmakeApiKey, templateId);
                     
@@ -362,9 +365,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     resultSection.style.display = 'block';
                     errorSection.style.display = 'none';
                     
-                    // テンプレート一覧を再表示
-                    const templates = await fetchLabelmakeTemplates(labelmakeApiKey);
-                    displayTemplatesList(templates);
+                    // 元の表示に戻す
+                    selectedItem.innerHTML = originalContent;
                 } catch (err) {
                     console.error('Error fetching template:', err);
                     errorMessage.textContent = `エラー: ${err.message}`;
