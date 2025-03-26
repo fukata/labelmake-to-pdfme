@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const response = await fetch('https://api.pdfme.com/v1/templates', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${apiKey}`,
+                'X-API-KEY': apiKey,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(template)
