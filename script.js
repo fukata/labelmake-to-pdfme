@@ -63,6 +63,9 @@ document.addEventListener('DOMContentLoaded', function() {
             templatesList.innerHTML = '<div class="loading">テンプレート一覧を読み込み中...</div>';
             templatesListSection.style.display = 'block';
             
+            // Make sure both columns are visible in the layout
+            document.querySelector('.two-column-layout').style.display = 'flex';
+            
             const templates = await fetchLabelmakeTemplates(labelmakeApiKey);
             displayTemplatesList(templates);
         } catch (err) {

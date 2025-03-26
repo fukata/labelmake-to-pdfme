@@ -34,27 +34,29 @@
             <button id="load-templates-btn">labelmakeのテンプレート一覧を読み込む</button>
         </div>
         
-        <div class="templates-list-section" id="templates-list-section" style="display: none;">
-            <h2>テンプレート一覧</h2>
-            <div id="templates-list" class="templates-list"></div>
-        </div>
-        
-        <div class="register-section">
-            <h2>pdfmeにテンプレートを登録</h2>
-            <div class="form-group">
-                <label for="template-name">テンプレート名:</label>
-                <input type="text" id="template-name" placeholder="テンプレート名を入力">
+        <div class="two-column-layout">
+            <div class="templates-list-section" id="templates-list-section" style="display: none;">
+                <h2>テンプレート一覧</h2>
+                <div id="templates-list" class="templates-list"></div>
             </div>
-            <div class="form-group">
-                <label for="template-tags">タグ:</label>
-                <input type="text" id="template-tags" placeholder="カンマ区切りでタグを入力">
+            
+            <div class="register-section">
+                <h2>pdfmeにテンプレートを登録</h2>
+                <div class="form-group">
+                    <label for="template-name">テンプレート名:</label>
+                    <input type="text" id="template-name" placeholder="テンプレート名を入力">
+                </div>
+                <div class="form-group">
+                    <label for="template-tags">タグ:</label>
+                    <input type="text" id="template-tags" placeholder="カンマ区切りでタグを入力">
+                </div>
+                <div class="form-group">
+                    <label for="template-schema">スキーマ:</label>
+                    <textarea id="template-schema" placeholder="JSONスキーマを入力" rows="6"></textarea>
+                </div>
+                <button id="register-btn">pdfmeにテンプレートを登録</button>
+                <div id="template-info" class="info-box"></div>
             </div>
-            <div class="form-group">
-                <label for="template-schema">スキーマ:</label>
-                <textarea id="template-schema" placeholder="JSONスキーマを入力" rows="6"></textarea>
-            </div>
-            <button id="register-btn">pdfmeにテンプレートを登録</button>
-            <div id="template-info" class="info-box"></div>
         </div>
         
         <div class="result-section" id="result-section" style="display: none;">
