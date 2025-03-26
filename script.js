@@ -1,7 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
     const labelmakeApiKeyInput = document.getElementById('labelmake-api-key');
     const pdfmeApiKeyInput = document.getElementById('pdfme-api-key');
-    const templateUpload = document.getElementById('template-upload');
+    const templateNameInput = document.getElementById('template-name');
+    const templateTagsInput = document.getElementById('template-tags');
+    const templateSchemaInput = document.getElementById('template-schema');
+    const registerBtn = document.getElementById('register-btn');
     const templateInfo = document.getElementById('template-info');
     const resultSection = document.getElementById('result-section');
     const errorSection = document.getElementById('error-section');
@@ -70,24 +73,60 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    templateUpload.addEventListener('change', async function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
+    registerBtn.addEventListener('click', async function() {
+        const templateName = templateNameInput.value.trim();
+        const templateTags = templateTagsInput.value.trim();
+        const templateSchema = templateSchemaInput.value.trim();
+        
+        if (!templateName) {
+            errorMessage.textContent = 'テンプレート名を入力してください。';
+            errorSection.style.display = 'block';
+            return;
+        }
+        
+        if (!templateSchema) {
+            errorMessage.textContent = 'スキーマを入力してください。';
+            errorSection.style.display = 'block';
+            return;
+        }
         
         try {
-            const content = await readFileAsJSON(file);
-            templateInfo.textContent = `ファイル名: ${file.name}, サイズ: ${(file.size / 1024).toFixed(2)} KB`;
+            // スキーマをJSONとして解析
+            let schemaData;
+            try {
+                schemaData = JSON.parse(templateSchema);
+            } catch (err) {
+                throw new Error('スキーマの形式が正しくありません。有効なJSONを入力してください。');
+            }
             
-            // labelmakeからpdfmeへの変換処理
-            convertedTemplate = convertLabelmakeToPdfme(content);
+            // pdfmeテンプレートの作成
+            const pdfmeTemplate = {
+                name: templateName,
+                tags: templateTags.split(',').map(tag => tag.trim()).filter(tag => tag),
+                schemas: schemaData.schemas || [],
+                basePdf: schemaData.basePdf || null,
+                apiKeys: {}
+            };
+            
+            // APIキーが設定されている場合は追加
+            if (labelmakeApiKey) {
+                pdfmeTemplate.apiKeys.labelmake = labelmakeApiKey;
+            }
+            
+            if (pdfmeApiKey) {
+                pdfmeTemplate.apiKeys.pdfme = pdfmeApiKey;
+            }
+            
+            convertedTemplate = pdfmeTemplate;
             
             // プレビュー表示
             showPreview(convertedTemplate);
             
+            templateInfo.textContent = `テンプレート名: ${templateName}`;
             resultSection.style.display = 'block';
             errorSection.style.display = 'none';
         } catch (err) {
-            console.error('Error processing file:', err);
+            console.error('Error processing template:', err);
             errorMessage.textContent = `エラー: ${err.message}`;
             resultSection.style.display = 'none';
             errorSection.style.display = 'block';
