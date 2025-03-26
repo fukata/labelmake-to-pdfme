@@ -113,9 +113,16 @@ document.addEventListener('DOMContentLoaded', function() {
             // pdfmeテンプレートの作成
             let basePdf = null;
             if (schemaData.basePdf) {
-              // URLからダウンロードしbase64に変換する
-              basePdf = await convertBasePdfToBase64(schemaData.basePdf)
+              try {
+                // URLからダウンロードしbase64に変換する
+                basePdf = await convertBasePdfToBase64(schemaData.basePdf);
+                console.log('BasePDF converted to base64 successfully');
+              } catch (err) {
+                console.error('Error converting basePdf:', err);
+                throw new Error(`ベースPDFの変換に失敗しました: ${err.message}`);
+              }
             }
+            
             const pdfmeTemplate = {
                 metaData: {
                   title: templateName,
@@ -125,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 templateData: {
                   schemas: schemaData.schemas || [],
-                  basePdf: schemaData.basePdf || null
+                  basePdf: basePdf
                 },
             };
             
@@ -295,7 +302,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // URLからPDFをダウンロードしbase64に変換
     async function convertBasePdfToBase64(url) {
-      return null;
+      try {
+        // URLからPDFをフェッチ
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`PDFのダウンロードに失敗しました。ステータスコード: ${response.status}`);
+        }
+        
+        // レスポンスをBlobとして取得
+        const blob = await response.blob();
+        
+        // BlobをBase64に変換
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            // data:application/pdf;base64, の部分を削除して純粋なbase64文字列を取得
+            const base64data = reader.result.split(',')[1];
+            resolve(base64data);
+          };
+          reader.onerror = () => {
+            reject(new Error('PDFのBase64変換に失敗しました。'));
+          };
+          reader.readAsDataURL(blob);
+        });
+      } catch (error) {
+        console.error('Base64変換エラー:', error);
+        throw new Error(`PDFのBase64変換に失敗しました: ${error.message}`);
+      }
     }
     
     // pdfmeにテンプレートを登録
