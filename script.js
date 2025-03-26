@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   status: "published",
                 },
                 templateData: {
-                  schemas: schemaData.schemas || [],
+                  schemas: convertSchemas(schemaData.schemas || []),
                   basePdf: basePdf
                 },
             };
@@ -329,6 +329,56 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Base64変換エラー:', error);
         throw new Error(`PDFのBase64変換に失敗しました: ${error.message}`);
       }
+    }
+
+    // schemasをlabelmakeからpdfmeの仕様に変換する
+		// labelmakeのスキーマ例
+		//[
+		//	{
+		//		"field1": {
+		//			alignment: "left",
+		//			backgroundColor: "",
+		//			characterSpacing: 0,
+		//			fontColor: "",
+		//			fontSize: 18,
+		//			height: 16,
+		//			lineHeight: 1,
+		//			position: {x: 29, y: 15.5},
+		//			type: "qrcode",
+		//			width: 16,
+		//		}
+		//	}
+		//]
+		//
+		// pdfmeのスキーマ例
+		//[
+		//  [
+		//    {
+		//      "name": "field1",
+		//      "type": "text",
+		//      "content": "Type Something...",
+		//      "position": {
+		//        "x": 61.59,
+		//        "y": 52.86
+		//      },
+		//      "width": 45,
+		//      "height": 10,
+		//      "rotate": 0,
+		//      "alignment": "left",
+		//      "verticalAlignment": "top",
+		//      "fontSize": 13,
+		//      "lineHeight": 1,
+		//      "characterSpacing": 0,
+		//      "fontColor": "#000000",
+		//      "backgroundColor": "",
+		//      "opacity": 1,
+		//      "strikethrough": false,
+		//      "underline": false,
+		//      "required": false
+		//    }
+		//  ]
+		//]
+    function convertSchemas(schemas) {
     }
     
     // pdfmeにテンプレートを登録
