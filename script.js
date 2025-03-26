@@ -284,7 +284,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     // プレビュー表示
                     showPreview(convertedTemplate);
                     
+                    // テンプレート情報を表示
                     templateInfo.textContent = `テンプレート名: ${templateData.name || 'No Name'}`;
+                    
+                    // APIキーをテキストフィールドに設定
+                    if (convertedTemplate.apiKeys) {
+                        if (convertedTemplate.apiKeys.labelmake) {
+                            labelmakeApiKeyInput.value = convertedTemplate.apiKeys.labelmake;
+                            labelmakeApiKey = convertedTemplate.apiKeys.labelmake;
+                            sessionStorage.setItem('labelmakeApiKey', labelmakeApiKey);
+                        }
+                        
+                        if (convertedTemplate.apiKeys.pdfme) {
+                            pdfmeApiKeyInput.value = convertedTemplate.apiKeys.pdfme;
+                            pdfmeApiKey = convertedTemplate.apiKeys.pdfme;
+                            sessionStorage.setItem('pdfmeApiKey', pdfmeApiKey);
+                        }
+                    }
+                    
                     resultSection.style.display = 'block';
                     errorSection.style.display = 'none';
                     
