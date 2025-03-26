@@ -291,12 +291,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         let html = '';
         templates.forEach(template => {
-            const createdAt = new Date(template.createdAt).toLocaleString('ja-JP');
             html += `
                 <div class="template-item" data-id="${template.id}">
                     <div class="template-info">
                         <div class="template-name">${template.name || 'No Name'}</div>
-                        <div class="template-date">作成日: ${createdAt}</div>
                     </div>
                     <button class="template-select-btn" data-id="${template.id}">選択</button>
                 </div>
