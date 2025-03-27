@@ -186,25 +186,6 @@ document.addEventListener('DOMContentLoaded', function() {
             registerBtn.textContent = 'pdfmeにテンプレートを登録';
         }
     });
-       
-    // ファイルをJSONとして読み込む
-    function readFileAsJSON(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const json = JSON.parse(e.target.result);
-                    resolve(json);
-                } catch (err) {
-                    reject(new Error('JSONの解析に失敗しました。有効なlabelmakeテンプレートファイルを選択してください。'));
-                }
-            };
-            reader.onerror = function() {
-                reject(new Error('ファイルの読み込みに失敗しました。'));
-            };
-            reader.readAsText(file);
-        });
-    }
     
     // labelmakeのテンプレートをpdfmeのテンプレートに変換
     function convertLabelmakeToPdfme(labelmakeTemplate) {
@@ -214,31 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
             schemas: labelmakeTemplate.schemas,
             basePdf: labelmakeTemplate.basePdf || null,
         };
-        
-        // labelmakeのフィールドをpdfmeのスキーマに変換
-        //if (labelmakeTemplate.template.schemas) {
-        //    labelmakeTemplate.template.schemas.forEach(schema => {
-        //        const pdfmeSchema = {
-        //            type: mapFieldType(schema.type),
-        //            position: {
-        //                x: schema.position.x,
-        //                y: schema.position.y
-        //            },
-        //            width: schema.width,
-        //            height: schema.height,
-        //            name: schema.key,
-        //            // pdfmeの追加プロパティ
-        //            alignment: mapAlignment(schema.align),
-        //            fontSize: schema.fontSize || 12,
-        //            fontColor: schema.fontColor || '#000000',
-        //            backgroundColor: schema.backgroundColor || null,
-        //            page: schema.page || 1
-        //        };
-        //        
-        //        pdfmeTemplate.schemas.push(pdfmeSchema);
-        //    });
-        //}
-        
+               
         return pdfmeTemplate;
     }
     
