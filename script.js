@@ -525,7 +525,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     // テンプレートを変換
                     convertedTemplate = convertLabelmakeToPdfme(selectedTemplate);
                 
-                
                     // テンプレート情報を表示
                     templateInfo.textContent = `テンプレート名: ${selectedTemplate.name || 'No Name'}`;
                 
