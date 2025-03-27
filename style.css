@@ -115,14 +115,6 @@ button:hover {
     min-height: 50px;
 }
 
-.preview-container {
-    margin: 20px 0;
-    border: 1px solid #ddd;
-    padding: 15px;
-    border-radius: 4px;
-    background-color: #fff;
-    min-height: 300px;
-}
 
 .error-message {
     padding: 15px;

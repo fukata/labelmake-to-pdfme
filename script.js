@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const errorSection = document.getElementById('error-section');
     const errorMessage = document.getElementById('error-message');
     const downloadBtn = document.getElementById('download-btn');
-    const previewElement = document.getElementById('preview');
     const loadTemplatesBtn = document.getElementById('load-templates-btn');
     const templatesListSection = document.getElementById('templates-list-section');
     const templatesList = document.getElementById('templates-list');
@@ -169,8 +168,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // 登録成功
             convertedTemplate = templateWithApiKeys;
             
-            // プレビュー表示
-            showPreview(convertedTemplate);
             
             templateInfo.textContent = `テンプレート名: ${templateName} (ID: ${registeredTemplate.id})`;
             resultSection.style.display = 'block';
@@ -277,27 +274,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return alignMap[labelmakeAlign] || 'left';
     }
     
-    // プレビュー表示
-    function showPreview(template) {
-        // pdfme UIを使用してプレビューを表示
-        // 注: 実際のプレビュー実装はpdfmeのAPIに依存します
-        previewElement.innerHTML = `<pre>${JSON.stringify(template, null, 2)}</pre>`;
-        
-        // 実際のpdfmeプレビューを実装する場合は以下のようなコードになります
-        /*
-        try {
-            const { Template } = PDFMe;
-            const viewer = new Template.Viewer({
-                domContainer: previewElement,
-                template: template
-            });
-            viewer.render();
-        } catch (err) {
-            console.error('Preview error:', err);
-            previewElement.innerHTML = '<p>プレビューの表示に失敗しました。</p>';
-        }
-        */
-    }
     
     // JSONファイルのダウンロード
     function downloadJSON(data, filename) {
@@ -549,8 +525,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     // テンプレートを変換
                     convertedTemplate = convertLabelmakeToPdfme(selectedTemplate);
                 
-                    // プレビュー表示
-                    showPreview(convertedTemplate);
                 
                     // テンプレート情報を表示
                     templateInfo.textContent = `テンプレート名: ${selectedTemplate.name || 'No Name'}`;
