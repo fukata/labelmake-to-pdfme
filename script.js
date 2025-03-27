@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultSection = document.getElementById('result-section');
     const errorSection = document.getElementById('error-section');
     const errorMessage = document.getElementById('error-message');
-    const downloadBtn = document.getElementById('download-btn');
     const loadTemplatesBtn = document.getElementById('load-templates-btn');
     const templatesListSection = document.getElementById('templates-list-section');
     const templatesList = document.getElementById('templates-list');
@@ -187,13 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
             registerBtn.textContent = 'pdfmeにテンプレートを登録';
         }
     });
-    
-    downloadBtn.addEventListener('click', function() {
-        if (convertedTemplate) {
-            downloadJSON(convertedTemplate, 'pdfme-template.json');
-        }
-    });
-    
+       
     // ファイルをJSONとして読み込む
     function readFileAsJSON(file) {
         return new Promise((resolve, reject) => {
@@ -273,21 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         return alignMap[labelmakeAlign] || 'left';
     }
-    
-    
-    // JSONファイルのダウンロード
-    function downloadJSON(data, filename) {
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-
+   
     // URLからPDFをダウンロードしbase64に変換
     async function convertBasePdfToBase64(url) {
       try {
