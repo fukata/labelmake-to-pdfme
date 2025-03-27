@@ -111,7 +111,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // pdfmeテンプレートの作成
-            let basePdf = null;
+            let basePdf = {
+                "width": 210,
+                "height": 297,
+                "padding": [
+                    10,
+                    10,
+                    10,
+                    10
+                ]
+            };
             if (schemaData.basePdf) {
               try {
                 // URLからダウンロードしbase64に変換する
@@ -337,7 +346,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // schemasをlabelmakeからpdfmeの仕様に変換する
 		// labelmakeのスキーマ例
 		//[
-		//	{
+	//	{
 		//		"field1": {
 		//			alignment: "left",
 		//			backgroundColor: "",
@@ -349,7 +358,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		//			position: {x: 29, y: 15.5},
 		//			type: "qrcode",
 		//			width: 16,
-		//		}
+	//		}
 		//	}
 		//]
 		//
