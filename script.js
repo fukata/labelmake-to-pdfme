@@ -13,10 +13,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const loadTemplatesBtn = document.getElementById('load-templates-btn');
     const templatesListSection = document.getElementById('templates-list-section');
     const templatesList = document.getElementById('templates-list');
+    const downloadBtn = document.getElementById('download-btn');
     
     let convertedTemplate = null;
     let labelmakeApiKey = '';
     let pdfmeApiKey = '';
+    
+    // ダウンロードボタンのイベントリスナー
+    downloadBtn.addEventListener('click', function() {
+        if (!convertedTemplate) {
+            errorMessage.textContent = 'ダウンロードするテンプレートがありません。';
+            errorSection.style.display = 'block';
+            return;
+        }
+        
+        // JSONをBlobに変換
+        const templateJson = JSON.stringify(convertedTemplate, null, 2);
+        const blob = new Blob([templateJson], { type: 'application/json' });
+        
+        // ダウンロードリンクを作成
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${convertedTemplate.metaData?.title || 'template'}.json`;
+        document.body.appendChild(a);
+        a.click();
+        
+        // クリーンアップ
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 0);
+    });
     
     // APIキーの変更を監視（changeとinputの両方で）
     labelmakeApiKeyInput.addEventListener('change', function(e) {
