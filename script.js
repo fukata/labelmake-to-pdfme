@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   status: "published",
                 },
                 templateData: {
-                  schemas: convertSchemas(schemaData.schemas || []),
+                  schemas: convertSchemas(schemaData),
                   basePdf: basePdf
                 },
             };
@@ -331,13 +331,16 @@ document.addEventListener('DOMContentLoaded', function() {
 		//    }
 		//  ]
 		//]
-    function convertSchemas(schemas) {
+    function convertSchemas(schemaData) {
+      const schemas = schemaData.schemas;
       if (!schemas || !Array.isArray(schemas) || schemas.length === 0) {
         return [[]]; // 空のスキーマを返す
       }
       
       // pdfmeのスキーマは[[]]の形式なので、最初の配列を作成
       const pdfmeSchemas = [[]];
+
+      const sampledata = schemaData.sampledata && schemaData.sampledata.length > 0 ? schemaData.sampledata[0] : {};
       
       // labelmakeのスキーマを処理
       schemas.forEach(schemaObj => {
@@ -359,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function() {
           const pdfmeField = {
             name: fieldName,
             type: fieldType,
-            content: (convertedTemplate && convertedTemplate.sampledata && convertedTemplate.sampledata[fieldName]) || (fieldType === 'text' ? 'Type Something...' : ''),
+            content: sampledata[fieldName] || '',
             position: {
               x: fieldData.position ? fieldData.position.x : 0,
               y: fieldData.position ? fieldData.position.y : 0
@@ -507,6 +510,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // スキーマをJSONとして設定
                     const schemaData = {
                         schemas: convertedTemplate.schemas || [],
+                        sampledata: convertedTemplate.sampledata || {},
                         basePdf: convertedTemplate.basePdf || null
                     };
                     templateSchemaInput.value = JSON.stringify(schemaData, null, 2);
