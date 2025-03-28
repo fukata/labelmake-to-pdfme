@@ -220,6 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // pdfmeのテンプレート構造を作成
         const pdfmeTemplate = {
             columns: labelmakeTemplate.columns,
+            sampledata: labelmakeTemplate.sampledata,
             schemas: labelmakeTemplate.schemas,
             basePdf: labelmakeTemplate.basePdf || null,
         };
@@ -308,7 +309,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		//    {
 		//      "name": "field1",
 		//      "type": "text",
-		//      "content": "Type Something...",
+		//      "content": "", // sampledata
 		//      "position": {
 		//        "x": 61.59,
 		//        "y": 52.86
