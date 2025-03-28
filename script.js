@@ -359,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function() {
           const pdfmeField = {
             name: fieldName,
             type: fieldType,
-            content: fieldData.sampledata || (fieldType === 'text' ? 'Type Something...' : ''),
+            content: (convertedTemplate && convertedTemplate.sampledata && convertedTemplate.sampledata[fieldName]) || (fieldType === 'text' ? 'Type Something...' : ''),
             position: {
               x: fieldData.position ? fieldData.position.x : 0,
               y: fieldData.position ? fieldData.position.y : 0
